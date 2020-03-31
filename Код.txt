@@ -1,0 +1,69 @@
+#include <stdio.h> 
+#include "math.h"
+double X[1000]; 
+double Y[1000];
+double f(double x) { 
+	return cos(2*x); 
+	}
+int readdata() { 
+	FILE *file; file = fopen("in2.txt", "rt"); 
+	int i = 0; 
+	while(!feof(file)) { 
+		fscanf(file, "%le %le", &X[i], &Y[i]); 
+		i++; } 
+		fclose(file); 
+		return i; 
+		}
+double wkx(int k, double x) { 
+	double p = 1; 
+	int i;
+for(i = 0; i <= k; i++) { 
+	p = p*(x-X[i]); 
+	} 
+	return p;
+}
+double rr(int k) { 
+	int i; 
+	int j; 
+	double S = 0;
+for(i = 0; i <= k; i++) { 
+	double p = 1;
+for(j = 0; j <= k; j++) { 
+	if(j != i) { 
+		p = p*(X[i]-X[j]); 
+		} }
+S += Y[i] / p;
+}
+return S;
+}
+double Nn(double x, int N) { 
+double S = Y[0];
+int k; 
+for(k = 1; k <= N; k++) { 
+	S = S + wkx(k-1,x)*rr(k); 
+	}
+return S;
+}
+int main(int argc, char **argv) { 
+	int j; 
+	int N = readdata() - 2; 
+	printf("%d", N); 
+	double R; 
+	double x=X[0]; 
+	double h=(X[N]-X[0])/(20*N); 
+	FILE *file1, *file2, *file3;
+file1 = fopen("outNn.txt", "wt"); 
+file2 = fopen("outWk.txt", "wt"); 
+file3 = fopen("outR.txt", "wt");
+for(j = 0; j <= 20*N; j++) { 
+	fprintf(file1, "%e\t%e\n", x, Nn(x, N)); 
+	R = fabs(f(x) - Nn(x, N)); 
+	fprintf(file2, "%e\t%e\n", x, wkx(N, x)); 
+	fprintf(file3, "%e\t%e\n", x, R); 
+	x = x + h; }
+fclose(file1); 
+fclose(file2); 
+fclose(file3);
+printf("\nDONE");
+return 0;
+}
